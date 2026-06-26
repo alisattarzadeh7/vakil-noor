@@ -2,6 +2,7 @@ CREATE TABLE posts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
   content TEXT NOT NULL,
+  excerpt TEXT NOT NULL,
   slug TEXT NOT NULL,
   created_at TEXT NOT NULL
 );

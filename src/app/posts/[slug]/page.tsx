@@ -11,7 +11,6 @@ type PostPageProps = {
 
 export async function generateStaticParams() {
   const posts =await  getAllPosts();
-  console.log({posts})
   return posts.filter((post:Post)=>!!post.slug).map((post:Post) => ({ slug: post.slug }));
 }
 
@@ -20,7 +19,6 @@ export async function generateMetadata({
 }: PostPageProps): Promise<Metadata> {
   const { slug } = await params;
   const post =await getPostBySlug(slug);
-  console.log({slug:post})
   if (!post) {
     return { title: "مقاله یافت نشد" };
   }
