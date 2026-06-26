@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { formatPersianDate } from "@/lib/format";
 import { getAllPosts} from "@/app/actions/posts";
+import {Post} from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -37,7 +38,7 @@ export default async function PostsPage() {
 
       <div className="mx-auto max-w-6xl px-6 py-16">
         <div className="space-y-6">
-          {allPosts?.map((post) => (
+          {allPosts?.map((post:Post) => (
             <article
               key={post?.id}
               className="legal-card group rounded-2xl p-7 transition-all hover:-translate-y-0.5 hover:shadow-lg"

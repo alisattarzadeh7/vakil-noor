@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatPersianDate } from "@/lib/format";
 import {getAllPosts, getPostBySlug} from "@/app/actions/posts";
+import {Post} from "@/lib/types";
 
 type PostPageProps = {
   params: Promise<{ slug: string }>;
@@ -11,22 +12,22 @@ type PostPageProps = {
 export async function generateStaticParams() {
   const posts =await  getAllPosts();
   console.log({posts})
-  return posts.filter(post=>!!post.slug).map((post) => ({ slug: post.slug }));
+  return posts.filter((post:Post)=>!!post.slug).map((post:Post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({
   params,
 }: PostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post =await getPostBySlug(slug);
   console.log({slug:post})
   if (!post) {
     return { title: "مقاله یافت نشد" };
   }
 
   return {
-    title: post.title,
-    description: post.excerpt,
+    title: post?.title,
+    description: post?.excerpt,
   };
 }
 

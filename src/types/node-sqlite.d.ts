@@ -12,3 +12,9 @@ declare module "node:sqlite" {
     run(...params: unknown[]): { changes: number; lastInsertRowid: number };
   }
 }
+
+
+
+interface CloudflareEnv {
+  DB: D1Database;
+}
