@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { formatPersianDate } from "@/lib/format";
-import {createPost, getAllPosts} from "@/app/actions/posts";
+import { getAllPosts} from "@/app/actions/posts";
 
 export const dynamic = "force-dynamic";
 
