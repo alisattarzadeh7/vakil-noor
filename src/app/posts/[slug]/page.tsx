@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAllPosts, getPostBySlug } from "@/lib/db";
 import { formatPersianDate } from "@/lib/format";
+import {getAllPosts, getPostBySlug} from "@/app/actions/posts";
 
 type PostPageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export async function generateStaticParams() {
-  const posts = getAllPosts();
-  return posts.map((post) => ({ slug: post.slug }));
+  const posts =await  getAllPosts();
+  console.log({posts})
+  return posts.filter(post=>!!post.slug).map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({
@@ -18,7 +19,7 @@ export async function generateMetadata({
 }: PostPageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = getPostBySlug(slug);
-
+  console.log({slug:post})
   if (!post) {
     return { title: "مقاله یافت نشد" };
   }
@@ -31,7 +32,7 @@ export async function generateMetadata({
 
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post =await  getPostBySlug(slug);
 
   if (!post) {
     notFound();
@@ -59,7 +60,7 @@ export default async function PostPage({ params }: PostPageProps) {
             {post.title}
           </h1>
           <div className="gold-divider my-8 opacity-50" />
-          <div className="space-y-6 text-base leading-9 text-navy/80">
+          <div className="space-y-6 text-base leading-9 text-navy/80 break-words">
             {post.content.split("\n\n").map((paragraph) => (
               <p key={paragraph.slice(0, 40)}>{paragraph}</p>
             ))}
