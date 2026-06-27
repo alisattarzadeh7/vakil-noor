@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import PostForm from "@/components/PostForm";
+import NewPostClient from "./NewPostClient";
 
 export const metadata: Metadata = {
   title: "مقاله جدید",
@@ -27,9 +27,7 @@ export default function NewPostPage() {
       </section>
 
       <div className="mx-auto max-w-3xl px-6 py-16">
-        <div className="legal-card rounded-2xl p-8 sm:p-10">
-          <PostForm />
-        </div>
+        <NewPostClient />
       </div>
     </main>
   );

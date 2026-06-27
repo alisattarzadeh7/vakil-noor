@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Vazirmatn } from "next/font/google";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
 
 const vazirmatn = Vazirmatn({
@@ -31,9 +32,11 @@ export default function RootLayout({
       className={`${vazirmatn.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-parchment text-navy">
-        <Navbar />
-        <div className="flex-1">{children}</div>
-        <Footer />
+        <AuthProvider>
+          <Navbar />
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

@@ -71,7 +71,21 @@ export default function Home() {
               </div>
             </div>
 
-            <aside className="legal-card-dark w-full max-w-sm rounded-2xl p-8 lg:shrink-0">
+            <div className="flex w-full max-w-sm shrink-0 flex-col gap-0 overflow-hidden rounded-2xl border border-gold/20 shadow-2xl shadow-black/40">
+              {/* ── Lawyer photo ── */}
+              <div className="relative overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/lawyer.png"
+                  alt="وکیل نور — وکیل پایه یک دادگستری"
+                  className="w-full object-cover object-top"
+                  style={{ aspectRatio: "4/4" }}
+                />
+                {/* Subtle gold bottom border */}
+                <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
+              </div>
+
+              <aside className="legal-card-dark rounded-none border-0 p-8">
               <h2 className="text-sm font-semibold tracking-wide text-gold">
                 اطلاعات تماس
               </h2>
@@ -101,7 +115,8 @@ export default function Home() {
                   </dd>
                 </div>
               </dl>
-            </aside>
+              </aside>
+            </div>
           </div>
         </div>
 

@@ -41,6 +41,11 @@ export async function getAllPosts() {
 }
 
 
+export async function deletePost(id: number) {
+    const { env } = await getCloudflareContext({ async: true });
+    await env.DB.prepare("DELETE FROM posts WHERE id = ?").bind(id).run();
+}
+
 export async function getPostBySlug(slug: string): Promise<Post | undefined> {
     const { env } =await getCloudflareContext({ async: true });
     const post = await env.DB
