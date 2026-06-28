@@ -30,7 +30,7 @@ export default function Navbar() {
             </span>
             <div>
               <span className="block text-lg font-bold tracking-tight text-white">
-                وکیل نور
+                مرضیه فلاح
               </span>
               <span className="block text-[10px] tracking-widest text-gold/70 uppercase">
                 مشاور حقوقی

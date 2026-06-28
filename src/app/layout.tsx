@@ -13,8 +13,8 @@ const vazirmatn = Vazirmatn({
 
 export const metadata: Metadata = {
   title: {
-    default: "وکیل نور | مشاور حقوقی",
-    template: "%s | وکیل نور",
+    default: "مرضیه فلاح | مشاور حقوقی",
+    template: "%s | مرضیه فلاح",
   },
   description:
     "وکیل پایه یک دادگستری و مشاور حقوقی در شهرستان نور مازندران — ارائه مشاوره و خدمات حقوقی تخصصی.",

@@ -42,7 +42,7 @@ export default function Home() {
               </div>
 
               <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-                <span className="text-gold">وکیل نور</span>
+                <span className="text-gold">مرضیه فلاح</span>
                 <br />
                 <span className="mt-2 block text-2xl font-semibold text-white/90 sm:text-3xl">
                   مشاور حقوقی در شهرستان نور مازندران
@@ -77,7 +77,7 @@ export default function Home() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/lawyer.png"
-                  alt="وکیل نور — وکیل پایه یک دادگستری"
+                  alt="مرضیه فلاح — وکیل پایه یک دادگستری"
                   className="w-full object-cover object-top"
                   style={{ aspectRatio: "4/4" }}
                 />

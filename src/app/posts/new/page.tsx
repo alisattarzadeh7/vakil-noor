@@ -4,7 +4,7 @@ import NewPostClient from "./NewPostClient";
 
 export const metadata: Metadata = {
   title: "مقاله جدید",
-  description: "افزودن مقاله حقوقی جدید به وب‌سایت وکیل نور.",
+  description: "افزودن مقاله حقوقی جدید به وب‌سایت مرضیه فلاح.",
 };
 
 export default function NewPostPage() {

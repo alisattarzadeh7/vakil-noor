@@ -10,7 +10,7 @@ export default function Footer() {
             <ScaleIcon className="h-8 w-8" />
           </span>
           <div>
-            <p className="font-semibold text-white">وکیل نور</p>
+            <p className="font-semibold text-white">مرضیه فلاح</p>
             <p className="text-sm">وکیل پایه یک دادگستری — شهرستان نور</p>
           </div>
         </div>

@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "مقالات",
   description:
-    "مقالات و مطالب حقوقی وکیل نور — مشاور حقوقی شهرستان نور مازندران.",
+    "مقالات و مطالب حقوقی مرضیه فلاح — مشاور حقوقی شهرستان نور مازندران.",
 };
 
 export default async function PostsPage() {
