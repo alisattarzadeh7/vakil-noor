@@ -1,7 +1,0 @@
-1:"$Sreact.fragment"
-2:I[22016,["/_next/static/chunks/2_w7pu_p6n9lq.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/14e1xubnrzp5v.js"],""]
-3:I[96961,["/_next/static/chunks/2_w7pu_p6n9lq.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/14e1xubnrzp5v.js"],"default"]
-4:I[97367,["/_next/static/chunks/2_w7pu_p6n9lq.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
-5:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":[["$","main",null,{"className":"legal-pattern min-h-[60vh]","children":[["$","section",null,{"className":"border-b border-gold/20 bg-navy py-14 text-white","children":["$","div",null,{"className":"mx-auto max-w-3xl px-6","children":[["$","$L2",null,{"href":"/posts","className":"inline-flex items-center gap-1 text-sm font-medium text-gold-light transition-colors hover:text-gold","children":[["$","span",null,{"aria-hidden":"true","children":"→"}],"بازگشت به مقالات"]}],["$","h1",null,{"className":"mt-4 text-4xl font-bold","children":"مقاله جدید"}],["$","p",null,{"className":"mt-3 leading-8 text-white/70","children":"مقاله حقوقی جدید خود را با تکمیل فرم زیر منتشر کنید."}]]}]}],["$","div",null,{"className":"mx-auto max-w-3xl px-6 py-16","children":["$","$L3",null,{}]}]]}],[["$","script","script-0",{"src":"/_next/static/chunks/14e1xubnrzp5v.js","async":true}]],["$","$L4",null,{"children":["$","$5",null,{"name":"Next.MetadataOutlet","children":"$@6"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"3hMMfZ4-bTP3x74WGPbA-"}
-6:null

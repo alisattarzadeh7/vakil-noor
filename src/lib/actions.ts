@@ -2,11 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { createPost } from "@/lib/db";
 import {
   type PostFormState,
   validatePostInput,
 } from "@/lib/validation";
-import {createPost} from "@/app/actions/posts";
 
 export async function createPostAction(
   _prevState: PostFormState,
@@ -26,8 +26,8 @@ export async function createPostAction(
   }
 
   try {
-    const post =await createPost(formData);
-    console.log({post})
+    const post = createPost(validation.data);
+
     revalidatePath("/posts");
     revalidatePath(`/posts/${post.slug}`);
 
