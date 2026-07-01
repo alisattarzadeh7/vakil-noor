@@ -1,0 +1,53 @@
+{
+  "node": {
+    "009362d326df94882663221ffa6f03476164227b03": {
+      "workers": {
+        "app/posts/[slug]/page": {
+          "moduleId": 46750,
+          "async": false,
+          "exportedName": "getAllPosts",
+          "filename": "src/app/actions/posts.ts"
+        }
+      },
+      "exportedName": "getAllPosts",
+      "filename": "src/app/actions/posts.ts"
+    },
+    "4094413027a084b5fa1814d3e2c74ef97d5a0a19a7": {
+      "workers": {
+        "app/posts/[slug]/page": {
+          "moduleId": 46750,
+          "async": false,
+          "exportedName": "deletePost",
+          "filename": "src/app/actions/posts.ts"
+        }
+      },
+      "exportedName": "deletePost",
+      "filename": "src/app/actions/posts.ts"
+    },
+    "40ad797c3dcc527fe9555e973dedd7dbd09ace4575": {
+      "workers": {
+        "app/posts/[slug]/page": {
+          "moduleId": 46750,
+          "async": false,
+          "exportedName": "createPost",
+          "filename": "src/app/actions/posts.ts"
+        }
+      },
+      "exportedName": "createPost",
+      "filename": "src/app/actions/posts.ts"
+    },
+    "40dc9078d183edd8a25e50eb94045e08581d4e4ff3": {
+      "workers": {
+        "app/posts/[slug]/page": {
+          "moduleId": 46750,
+          "async": false,
+          "exportedName": "getPostBySlug",
+          "filename": "src/app/actions/posts.ts"
+        }
+      },
+      "exportedName": "getPostBySlug",
+      "filename": "src/app/actions/posts.ts"
+    }
+  },
+  "edge": {}
+}
