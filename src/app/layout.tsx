@@ -18,6 +18,14 @@ export const metadata: Metadata = {
   },
   description:
     "وکیل پایه یک دادگستری و مشاور حقوقی در شهرستان نور مازندران — ارائه مشاوره و خدمات حقوقی تخصصی.",
+  verification: {
+    google: "VfqprOi5PuZXc1cm2DRkk9430Cu-rdIS3Tx_3oXKOiQ",
+  },
+  icons:{
+    icon:{
+      url:'/law.png'
+    }
+  }
 };
 
 export default function RootLayout({
@@ -31,10 +39,10 @@ export default function RootLayout({
       dir="rtl"
       className={`${vazirmatn.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-parchment text-navy">
-        <AuthProvider>
-          <Navbar />
-          <div className="flex-1">{children}</div>
+    <body className="flex min-h-full flex-col bg-parchment text-navy">
+    <AuthProvider>
+      <Navbar/>
+      <div className="flex-1">{children}</div>
           <Footer />
         </AuthProvider>
       </body>
