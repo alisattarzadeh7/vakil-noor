@@ -33,7 +33,7 @@ export default function Navbar() {
                 مرضیه فلاح
               </span>
               <span className="block text-[10px] tracking-widest text-gold/70 uppercase">
-                مشاور حقوقی
+                وکیل پایه یک دادگستری
               </span>
             </div>
           </Link>

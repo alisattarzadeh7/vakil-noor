@@ -5,6 +5,17 @@ import NewPostClient from "./NewPostClient";
 export const metadata: Metadata = {
   title: "مقاله جدید",
   description: "افزودن مقاله حقوقی جدید به وب‌سایت مرضیه فلاح.",
+  alternates: {
+    canonical: "/posts/new",
+  },
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default function NewPostPage() {

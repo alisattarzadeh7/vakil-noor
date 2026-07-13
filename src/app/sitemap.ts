@@ -1,13 +1,8 @@
 import type { MetadataRoute } from "next";
 import { getAllPosts } from "@/lib/db";
+import { absoluteUrl, isIndexablePost, SITE_URL } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-
-const SITE_URL = "https://vakilnoor.ir";
-
-function absoluteUrl(pathname: string) {
-  return new URL(pathname, `${SITE_URL}/`).toString();
-}
 
 function toDate(value: string) {
   const date = new Date(value);
@@ -15,15 +10,16 @@ function toDate(value: string) {
   return Number.isNaN(date.getTime()) ? new Date() : date;
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const posts = getAllPosts();
-  const latestPostDate = posts[0]?.created_at
-    ? toDate(posts[0].created_at)
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const posts = await getAllPosts();
+  const indexablePosts = posts.filter(isIndexablePost);
+  const latestPostDate = indexablePosts[0]?.created_at
+    ? toDate(indexablePosts[0].created_at)
     : new Date();
 
   return [
     {
-      url: absoluteUrl("/"),
+      url: SITE_URL,
       lastModified: latestPostDate,
       changeFrequency: "monthly",
       priority: 1,
@@ -34,7 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.8,
     },
-    ...posts.map((post) => ({
+    ...indexablePosts.map((post) => ({
       url: absoluteUrl(`/posts/${post.slug}`),
       lastModified: toDate(post.created_at),
       changeFrequency: "monthly" as const,

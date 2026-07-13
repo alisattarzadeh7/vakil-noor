@@ -5,20 +5,46 @@ import { getAllPosts } from "@/app/actions/posts";
 import { Post } from "@/lib/types";
 import DeletePostButton from "@/components/DeletePostButton";
 import NewPostLink from "@/components/NewPostLink";
+import { absoluteUrl, isIndexablePost } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "مقالات",
+  title: "مقالات حقوقی",
   description:
     "مقالات و مطالب حقوقی مرضیه فلاح — مشاور حقوقی شهرستان نور مازندران.",
+  alternates: {
+    canonical: "/posts",
+  },
+  openGraph: {
+    title: "مقالات حقوقی مرضیه فلاح",
+    description:
+      "مطالب آموزشی و حقوقی درباره قراردادها، دادگاه‌ها و مشاوره حقوقی در نور مازندران.",
+    url: "/posts",
+    type: "website",
+  },
 };
 
 export default async function PostsPage() {
   const allPosts = await getAllPosts();
+  const indexablePosts = allPosts.filter(isIndexablePost);
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: indexablePosts.map((post: Post, index: number) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: absoluteUrl(`/posts/${post.slug}`),
+      name: post.title,
+    })),
+  };
 
   return (
     <main className="legal-pattern min-h-[60vh]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
       <section className="border-b border-gold/20 bg-navy py-14 text-white">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -42,8 +68,8 @@ export default async function PostsPage() {
             >
               <div className="flex justify-between">
                 <time
-                    dateTime={post?.created_at}
-                    className="text-sm font-medium text-gold"
+                  dateTime={post?.created_at}
+                  className="text-sm font-medium text-gold"
                 >
                   {formatPersianDate(post?.created_at)}
                 </time>
@@ -53,6 +79,7 @@ export default async function PostsPage() {
               <h2 className="mt-3 text-2xl font-bold text-navy">
                 <Link
                   href={`/posts/${post?.slug}`}
+                  rel={isIndexablePost(post) ? undefined : "nofollow"}
                   className="transition-colors group-hover:text-navy-light"
                 >
                   {post?.title}
@@ -64,6 +91,7 @@ export default async function PostsPage() {
               <div className="mt-5 flex items-center gap-6">
                 <Link
                   href={`/posts/${post?.slug}`}
+                  rel={isIndexablePost(post) ? undefined : "nofollow"}
                   className="inline-flex items-center gap-1 text-sm font-semibold text-gold transition-colors hover:text-navy"
                 >
                   ادامه مطلب

@@ -1,8 +1,17 @@
+import Image from "next/image";
 import Link from "next/link";
 import ScaleIcon from "@/components/ScaleIcon";
 import { formatPhoneDisplay } from "@/lib/format";
-
-const PHONE = "09128979404";
+import {
+  absoluteUrl,
+  CONTACT_PHONE,
+  CONTACT_PHONE_E164,
+  DEFAULT_DESCRIPTION,
+  DEFAULT_TITLE,
+  PERSON_NAME,
+  PRACTICE_AREA,
+  SITE_URL,
+} from "@/lib/seo";
 
 const services = [
   {
@@ -26,8 +35,61 @@ const services = [
 ];
 
 export default function Home() {
+  const legalServiceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LegalService",
+    name: PERSON_NAME,
+    url: SITE_URL,
+    image: absoluteUrl("/lawyer.png"),
+    logo: absoluteUrl("/law.png"),
+    description: DEFAULT_DESCRIPTION,
+    telephone: CONTACT_PHONE_E164,
+    areaServed: {
+      "@type": "AdministrativeArea",
+      name: PRACTICE_AREA,
+    },
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "نور",
+      addressRegion: "مازندران",
+      addressCountry: "IR",
+    },
+    founder: {
+      "@type": "Person",
+      name: PERSON_NAME,
+      jobTitle: "وکیل پایه یک دادگستری",
+    },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "خدمات حقوقی",
+      itemListElement: services.map((service) => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: service.title,
+          description: service.description,
+        },
+      })),
+    },
+  };
+
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: DEFAULT_TITLE,
+    url: SITE_URL,
+    inLanguage: "fa-IR",
+    description: DEFAULT_DESCRIPTION,
+  };
+
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([legalServiceJsonLd, websiteJsonLd]),
+        }}
+      />
       <section className="relative overflow-hidden bg-navy text-white">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(201,168,76,0.12)_0%,_transparent_55%)]" />
         <div className="pointer-events-none absolute -left-20 top-20 h-64 w-64 rounded-full bg-gold/5 blur-3xl" />
@@ -56,11 +118,11 @@ export default function Home() {
 
               <div className="mt-8 flex flex-wrap items-center gap-4">
                 <a
-                  href={`tel:${PHONE}`}
+                  href={`tel:${CONTACT_PHONE}`}
                   className="inline-flex items-center gap-2 rounded-xl bg-gold px-7 py-3.5 text-sm font-bold text-navy transition-all hover:bg-gold-light hover:shadow-lg hover:shadow-gold/20"
                 >
                   <span aria-hidden="true">📞</span>
-                  {formatPhoneDisplay(PHONE)}
+                  {formatPhoneDisplay(CONTACT_PHONE)}
                 </a>
                 <Link
                   href="/posts"
@@ -72,16 +134,17 @@ export default function Home() {
             </div>
 
             <div className="flex w-full max-w-sm shrink-0 flex-col gap-0 overflow-hidden rounded-2xl border border-gold/20 shadow-2xl shadow-black/40">
-              {/* ── Lawyer photo ── */}
               <div className="relative overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src="/lawyer.png"
-                  alt="مرضیه فلاح — وکیل پایه یک دادگستری"
+                  alt="مرضیه فلاح، وکیل پایه یک دادگستری در نور مازندران"
+                  width={800}
+                  height={800}
+                  priority
+                  sizes="(min-width: 1024px) 384px, calc(100vw - 48px)"
                   className="w-full object-cover object-top"
                   style={{ aspectRatio: "4/4" }}
                 />
-                {/* Subtle gold bottom border */}
                 <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
               </div>
 
@@ -107,10 +170,10 @@ export default function Home() {
                   <dt className="text-sm text-white/50">شماره تماس</dt>
                   <dd className="mt-1">
                     <a
-                      href={`tel:${PHONE}`}
+                      href={`tel:${CONTACT_PHONE}`}
                       className="text-xl font-bold text-gold-light transition-colors hover:text-gold"
                     >
-                      {formatPhoneDisplay(PHONE)}
+                      {formatPhoneDisplay(CONTACT_PHONE)}
                     </a>
                   </dd>
                 </div>
@@ -157,7 +220,7 @@ export default function Home() {
               </p>
             </div>
             <a
-              href={`tel:${PHONE}`}
+              href={`tel:${CONTACT_PHONE}`}
               className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-gold transition-colors hover:text-navy"
             >
               تماس برای مشاوره
@@ -226,10 +289,10 @@ export default function Home() {
             برای دریافت مشاوره و راهنمایی حقوقی با من تماس بگیرید.
           </p>
           <a
-            href={`tel:${PHONE}`}
+            href={`tel:${CONTACT_PHONE}`}
             className="mt-8 inline-flex items-center gap-2 rounded-xl bg-gold px-8 py-4 text-base font-bold text-navy transition-all hover:bg-gold-light"
           >
-            {formatPhoneDisplay(PHONE)}
+            {formatPhoneDisplay(CONTACT_PHONE)}
           </a>
         </div>
       </section>

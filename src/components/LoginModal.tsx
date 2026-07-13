@@ -44,7 +44,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
       }}
     >
       <div
-        className="legal-card relative w-full max-w-md rounded-2xl p-8"
+        className="!bg-navy/96  relative w-full max-w-md rounded-2xl p-8"
         role="dialog"
         aria-modal="true"
         aria-labelledby="login-title"

@@ -7,11 +7,10 @@ import {
   createPost,
   deletePost as dbDeletePost,
 } from "@/lib/db";
-import type { Post } from "@/lib/types";
 
 export { getAllPosts, getPostBySlug, createPost };
 
 export async function deletePost(id: number): Promise<void> {
-  dbDeletePost(id);
+  await dbDeletePost(id);
   revalidatePath("/posts");
 }
