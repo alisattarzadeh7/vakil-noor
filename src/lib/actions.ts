@@ -26,7 +26,7 @@ export async function createPostAction(
   }
 
   try {
-    const post = createPost(validation.data);
+    const post = await createPost(validation.data);
 
     revalidatePath("/posts");
     revalidatePath(`/posts/${post.slug}`);

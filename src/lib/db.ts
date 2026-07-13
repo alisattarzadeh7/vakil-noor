@@ -1,10 +1,15 @@
-import fs from "node:fs";
-import path from "node:path";
-import { DatabaseSync } from "node:sqlite";
+import {
+  createPool,
+  type ExecuteValues,
+  type Pool,
+  type QueryResult,
+  type ResultSetHeader,
+  type RowDataPacket,
+} from "mysql2/promise";
 import type { Post } from "./types";
 
-const DB_DIR = path.join(process.cwd(), "data");
-const DB_PATH = path.join(DB_DIR, "posts.db");
+type PostRow = RowDataPacket & Post;
+type CountRow = RowDataPacket & { count: number };
 
 const PERSIAN_POSTS = [
   {
@@ -45,119 +50,264 @@ const PERSIAN_POSTS = [
   },
 ];
 
-function getDatabase(): DatabaseSync {
+function readMysqlConfig() {
+  const requiredEnv = [
+    "MYSQL_HOST",
+    "MYSQL_PORT",
+    "MYSQL_DATABASE",
+    "MYSQL_USER",
+    "MYSQL_PASSWORD",
+  ] as const;
+
+  const missing = requiredEnv.filter((key) => !process.env[key]);
+  if (missing.length > 0) {
+    throw new Error(
+      `Missing MySQL environment variables: ${missing.join(", ")}`,
+    );
+  }
+
+  const port = Number(process.env.MYSQL_PORT);
+  if (!Number.isInteger(port) || port <= 0) {
+    throw new Error("MYSQL_PORT must be a positive integer.");
+  }
+
+  return {
+    host: process.env.MYSQL_HOST!,
+    port,
+    database: process.env.MYSQL_DATABASE!,
+    user: process.env.MYSQL_USER!,
+    password: process.env.MYSQL_PASSWORD!,
+  };
+}
+
+function getPool(): Pool {
   const globalForDb = globalThis as typeof globalThis & {
-    __vakilnoorDb?: DatabaseSync;
+    __vakilnoorMysqlPool?: Pool;
   };
 
-  if (globalForDb.__vakilnoorDb) {
-    return globalForDb.__vakilnoorDb;
+  if (globalForDb.__vakilnoorMysqlPool) {
+    return globalForDb.__vakilnoorMysqlPool;
   }
 
-  if (!fs.existsSync(DB_DIR)) {
-    fs.mkdirSync(DB_DIR, { recursive: true });
+  const config = readMysqlConfig();
+  const pool = createPool({
+    ...config,
+    charset: "utf8mb4",
+    connectionLimit: 10,
+    queueLimit: 0,
+    waitForConnections: true,
+  });
+
+  globalForDb.__vakilnoorMysqlPool = pool;
+  return pool;
+}
+
+function isTransientDatabaseError(error: unknown): boolean {
+  if (typeof error !== "object" || error === null || !("code" in error)) {
+    return false;
   }
 
-  const db = new DatabaseSync(DB_PATH);
+  return [
+    "ECONNRESET",
+    "EPIPE",
+    "ETIMEDOUT",
+    "PROTOCOL_CONNECTION_LOST",
+  ].includes(String(error.code));
+}
 
-  db.exec(`
+async function execute<T extends QueryResult>(
+  pool: Pool,
+  sql: string,
+  values: ExecuteValues[] = [],
+): Promise<T> {
+  try {
+    const [result] = await pool.execute<T>(sql, values);
+    return result;
+  } catch (error) {
+    if (!isTransientDatabaseError(error)) {
+      throw error;
+    }
+
+    const [result] = await pool.execute<T>(sql, values);
+    return result;
+  }
+}
+
+async function getReadyPool(): Promise<Pool> {
+  const globalForDb = globalThis as typeof globalThis & {
+    __vakilnoorMysqlInit?: Promise<void>;
+  };
+
+  if (!globalForDb.__vakilnoorMysqlInit) {
+    globalForDb.__vakilnoorMysqlInit = initializeDatabase();
+  }
+
+  await globalForDb.__vakilnoorMysqlInit;
+  return getPool();
+}
+
+async function initializeDatabase(): Promise<void> {
+  const pool = getPool();
+
+  await execute<ResultSetHeader>(
+    pool,
+    `
     CREATE TABLE IF NOT EXISTS posts (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id INT UNSIGNED NOT NULL AUTO_INCREMENT,
       title TEXT NOT NULL,
-      slug TEXT NOT NULL UNIQUE,
+      slug VARCHAR(255) NOT NULL,
       excerpt TEXT NOT NULL,
-      content TEXT NOT NULL,
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    )
-  `);
+      content MEDIUMTEXT NOT NULL,
+      created_at VARCHAR(32) NOT NULL,
+      PRIMARY KEY (id),
+      UNIQUE KEY posts_slug_unique (slug)
+    ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+  `,
+  );
 
-  seedPosts(db);
-
-  globalForDb.__vakilnoorDb = db;
-  return db;
+  await seedPosts(pool);
 }
 
-function insertPosts(db: DatabaseSync, posts: typeof PERSIAN_POSTS) {
-  const insert = db.prepare(`
-    INSERT INTO posts (title, slug, excerpt, content, created_at)
-    VALUES (@title, @slug, @excerpt, @content, @created_at)
-  `);
+async function insertPosts(
+  pool: Pool,
+  posts: typeof PERSIAN_POSTS,
+): Promise<void> {
+  if (posts.length === 0) return;
 
-  for (const post of posts) {
-    insert.run(post);
-  }
+  const placeholders = posts.map(() => "(?, ?, ?, ?, ?)").join(", ");
+  const values = posts.flatMap((post) => [
+    post.title,
+    post.slug,
+    post.excerpt,
+    post.content,
+    post.created_at,
+  ]);
+
+  await execute<ResultSetHeader>(
+    pool,
+    `
+      INSERT INTO posts (title, slug, excerpt, content, created_at)
+      VALUES ${placeholders}
+    `,
+    values,
+  );
 }
 
-function seedPosts(db: DatabaseSync) {
-  const count = db.prepare("SELECT COUNT(*) AS count FROM posts").get() as {
-    count: number;
-  };
+async function seedPosts(pool: Pool): Promise<void> {
+  const countRows = await execute<CountRow[]>(
+    pool,
+    "SELECT COUNT(*) AS count FROM posts",
+  );
+  const count = Number(countRows[0]?.count ?? 0);
 
-  if (count.count === 0) {
-    insertPosts(db, PERSIAN_POSTS);
+  if (count === 0) {
+    await insertPosts(pool, PERSIAN_POSTS);
     return;
   }
 
-  const legacy = db
-    .prepare("SELECT slug FROM posts WHERE slug = ?")
-    .get("why-i-build-things-on-the-web");
+  const legacyRows = await execute<RowDataPacket[]>(
+    pool,
+    "SELECT slug FROM posts WHERE slug = ? LIMIT 1",
+    ["why-i-build-things-on-the-web"],
+  );
 
-  if (legacy) {
-    db.exec("DELETE FROM posts");
-    insertPosts(db, PERSIAN_POSTS);
+  if (legacyRows.length > 0) {
+    await execute<ResultSetHeader>(pool, "DELETE FROM posts");
+    await insertPosts(pool, PERSIAN_POSTS);
   }
 }
 
-export function getAllPosts(): Post[] {
-  const db = getDatabase();
-  return db
-    .prepare("SELECT * FROM posts ORDER BY datetime(created_at) DESC")
-    .all() as Post[];
+function isDuplicateEntryError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "ER_DUP_ENTRY"
+  );
 }
 
-export function getPostBySlug(slug: string): Post | undefined {
-  const db = getDatabase();
-  return db.prepare("SELECT * FROM posts WHERE slug = ?").get(slug) as
-    | Post
-    | undefined;
+export async function getAllPosts(): Promise<Post[]> {
+  const pool = await getReadyPool();
+  const rows = await execute<PostRow[]>(
+    pool,
+    "SELECT id, title, slug, excerpt, content, created_at FROM posts ORDER BY created_at DESC",
+  );
+
+  return rows;
 }
 
-export function isSlugTaken(slug: string): boolean {
-  const db = getDatabase();
-  const row = db.prepare("SELECT id FROM posts WHERE slug = ?").get(slug);
-  return Boolean(row);
+export async function getPostBySlug(slug: string): Promise<Post | undefined> {
+  const pool = await getReadyPool();
+  const rows = await execute<PostRow[]>(
+    pool,
+    "SELECT id, title, slug, excerpt, content, created_at FROM posts WHERE slug = ? LIMIT 1",
+    [slug],
+  );
+
+  return rows[0];
 }
 
-export function deletePost(id: number): void {
-  const db = getDatabase();
-  db.prepare("DELETE FROM posts WHERE id = ?").run(id);
+export async function isSlugTaken(slug: string): Promise<boolean> {
+  const pool = await getReadyPool();
+  const rows = await execute<RowDataPacket[]>(
+    pool,
+    "SELECT id FROM posts WHERE slug = ? LIMIT 1",
+    [slug],
+  );
+
+  return rows.length > 0;
 }
 
-export function createPost(input: {
+export async function deletePost(id: number): Promise<void> {
+  const pool = await getReadyPool();
+  await execute<ResultSetHeader>(pool, "DELETE FROM posts WHERE id = ?", [id]);
+}
+
+export async function createPost(input: {
   title: string;
   slug: string;
   excerpt: string;
   content: string;
-}): Post {
-  const db = getDatabase();
+}): Promise<Post> {
+  const pool = await getReadyPool();
 
-  if (isSlugTaken(input.slug)) {
+  if (await isSlugTaken(input.slug)) {
     throw new Error("SLUG_TAKEN");
   }
 
-  const result = db
-    .prepare(`
-      INSERT INTO posts (title, slug, excerpt, content, created_at)
-      VALUES (@title, @slug, @excerpt, @content, @created_at)
-    `)
-    .run({
-      ...input,
-      created_at: new Date().toISOString(),
-    });
+  try {
+    const result = await execute<ResultSetHeader>(
+      pool,
+      `
+        INSERT INTO posts (title, slug, excerpt, content, created_at)
+        VALUES (?, ?, ?, ?, ?)
+      `,
+      [
+        input.title,
+        input.slug,
+        input.excerpt,
+        input.content,
+        new Date().toISOString(),
+      ],
+    );
 
-  const post = db
-    .prepare("SELECT * FROM posts WHERE id = ?")
-    .get(result.lastInsertRowid) as Post;
+    const rows = await execute<PostRow[]>(
+      pool,
+      "SELECT id, title, slug, excerpt, content, created_at FROM posts WHERE id = ?",
+      [result.insertId],
+    );
 
-  return post;
+    const post = rows[0];
+    if (!post) {
+      throw new Error("POST_CREATE_FAILED");
+    }
+
+    return post;
+  } catch (error) {
+    if (isDuplicateEntryError(error)) {
+      throw new Error("SLUG_TAKEN");
+    }
+
+    throw error;
+  }
 }

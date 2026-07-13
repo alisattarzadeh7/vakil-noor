@@ -1,4 +1,6 @@
 import ScaleIcon from "./ScaleIcon";
+import { CONTACT_PHONE } from "@/lib/seo";
+import { formatPhoneDisplay } from "@/lib/format";
 
 export default function Footer() {
   return (
@@ -19,10 +21,10 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} تمامی حقوق محفوظ است.
           </p>
           <a
-            href="tel:09128979404"
+            href={`tel:${CONTACT_PHONE}`}
             className="mt-1 inline-block font-medium text-gold-light transition-colors hover:text-gold"
           >
-            ۰۹۱۲۸۹۷۹۴۰۴
+            {formatPhoneDisplay(CONTACT_PHONE)}
           </a>
         </div>
       </div>
