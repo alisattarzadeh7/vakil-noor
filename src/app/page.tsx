@@ -34,6 +34,24 @@ const services = [
   },
 ];
 
+const faqs = [
+  {
+    question: "مشاوره حقوقی چگونه انجام می‌شود؟",
+    answer:
+      "در مشاوره حقوقی، موضوع پرونده و مدارک موجود بررسی می‌شود تا مسیرهای قانونی قابل پیگیری، نکات مهم و اقدامات بعدی با شفافیت توضیح داده شود.",
+  },
+  {
+    question: "برای تنظیم یا بررسی قرارداد چه اطلاعاتی لازم است؟",
+    answer:
+      "متن قرارداد، مشخصات طرفین، موضوع توافق، زمان‌بندی انجام تعهدات و شرایط پرداخت یا فسخ، از اطلاعاتی هستند که به بررسی دقیق‌تر قرارداد کمک می‌کنند.",
+  },
+  {
+    question: "آیا پیش از طرح دعوا می‌توان مشاوره گرفت؟",
+    answer:
+      "بله. بررسی موضوع پیش از هر اقدام می‌تواند به شناخت مدارک موردنیاز، ارزیابی راه‌های قانونی و تصمیم‌گیری آگاهانه‌تر کمک کند.",
+  },
+];
+
 export default function Home() {
   const legalServiceJsonLd = {
     "@context": "https://schema.org",
@@ -278,6 +296,47 @@ export default function Home() {
               </article>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="legal-pattern border-b border-gold/20">
+        <div className="mx-auto max-w-4xl px-6 py-20">
+          <div className="text-center">
+            <p className="text-sm font-semibold text-gold">پرسش‌های متداول</p>
+            <h2 className="mt-2 text-3xl font-bold text-navy">
+              پاسخ به پرسش‌های حقوقی اولیه
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl leading-8 text-navy/70">
+              این پاسخ‌ها برای آشنایی اولیه هستند و جایگزین بررسی شرایط و مدارک هر پرونده نیستند.
+            </p>
+          </div>
+
+          <div className="mt-10 divide-y divide-gold/20 overflow-hidden rounded-2xl border border-gold/20 bg-white/70">
+            {faqs.map((faq) => (
+              <details key={faq.question} className="group p-6">
+                <summary className="cursor-pointer list-none font-bold text-navy marker:hidden">
+                  <span className="flex items-center justify-between gap-4">
+                    {faq.question}
+                    <span
+                      aria-hidden="true"
+                      className="text-xl text-gold transition-transform group-open:rotate-45"
+                    >
+                      +
+                    </span>
+                  </span>
+                </summary>
+                <p className="pt-4 leading-8 text-navy/75">{faq.answer}</p>
+              </details>
+            ))}
+          </div>
+
+          <p className="mt-8 text-center leading-8 text-navy/75">
+            برای مطالعه نکات و راهنماهای بیشتر، به{" "}
+            <Link href="/posts" className="font-semibold text-gold hover:text-navy">
+              مقالات حقوقی
+            </Link>{" "}
+            مراجعه کنید.
+          </p>
         </div>
       </section>
 

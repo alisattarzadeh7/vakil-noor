@@ -247,6 +247,27 @@ export async function getPostBySlug(slug: string): Promise<Post | undefined> {
   return rows[0];
 }
 
+export async function searchPosts(
+  query: string,
+  limit: number,
+): Promise<Post[]> {
+  const pool = await getReadyPool();
+  const searchTerm = `%${query}%`;
+  const rows = await execute<PostRow[]>(
+    pool,
+    `
+      SELECT id, title, slug, excerpt, content, created_at
+      FROM posts
+      WHERE title LIKE ? OR excerpt LIKE ? OR content LIKE ?
+      ORDER BY created_at DESC
+      LIMIT ?
+    `,
+    [searchTerm, searchTerm, searchTerm, limit],
+  );
+
+  return rows;
+}
+
 export async function isSlugTaken(slug: string): Promise<boolean> {
   const pool = await getReadyPool();
   const rows = await execute<RowDataPacket[]>(
