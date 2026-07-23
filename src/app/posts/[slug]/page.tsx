@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatPersianDate } from "@/lib/format";
-import { getAllPosts, getPostBySlug } from "@/app/actions/posts";
-import type { Post } from "@/lib/types";
+import { getPostBySlug } from "@/app/actions/posts";
 import {
   absoluteUrl,
   isIndexablePost,
@@ -16,12 +15,8 @@ type PostPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export async function generateStaticParams() {
-  const posts = await getAllPosts();
-  return posts
-    .filter(isIndexablePost)
-    .map((post: Post) => ({ slug: post.slug }));
-}
+// Render each post at request time so its content and metadata stay current.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

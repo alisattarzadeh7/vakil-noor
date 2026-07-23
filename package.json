@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port 8080",
-    "build": "next build",
-    "start": "next start",
+    "build": "next build  --webpack",
+    "start": "node server.js",
     "lint": "eslint"
   },
   "dependencies": {
@@ -19,8 +19,10 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "shx": "^0.4.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
